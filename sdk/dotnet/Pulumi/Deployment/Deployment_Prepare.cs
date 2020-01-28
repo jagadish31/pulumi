@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
 
 namespace Pulumi
-{
+{   
     public partial class Deployment
     {
         private async Task<PrepareResult> PrepareResourceAsync(
             string label, Resource res, bool custom,
-            ResourceArgs args, ResourceOptions options)
+            IResourceArgs args, ResourceOptions options)
         {
             /* IMPORTANT!  We should never await prior to this line, otherwise the Resource will be partly uninitialized. */
 

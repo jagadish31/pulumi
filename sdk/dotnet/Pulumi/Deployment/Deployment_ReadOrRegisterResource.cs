@@ -11,7 +11,7 @@ namespace Pulumi
     public partial class Deployment
     {
         void IDeploymentInternal.ReadOrRegisterResource(
-            Resource resource, ResourceArgs args, ResourceOptions options)
+            Resource resource, IResourceArgs args, ResourceOptions options)
         {
             // ReadOrRegisterResource is called in a fire-and-forget manner.  Make sure we keep
             // track of this task so that the application will not quit until this async work
@@ -35,7 +35,7 @@ namespace Pulumi
         }
 
         private async Task<(string urn, string id, Struct data)> ReadOrRegisterResourceAsync(
-            Resource resource, ResourceArgs args, ResourceOptions options)
+            Resource resource, IResourceArgs args, ResourceOptions options)
         {
             if (options.Id != null)
             {
@@ -63,7 +63,7 @@ namespace Pulumi
         /// the results of it.
         /// </summary>
         private async Task CompleteResourceAsync(
-            Resource resource, ResourceArgs args, ResourceOptions options,
+            Resource resource, IResourceArgs args, ResourceOptions options,
             ImmutableDictionary<string, IOutputCompletionSource> completionSources)
         {
             // Run in a try/catch/finally so that we always resolve all the outputs of the resource

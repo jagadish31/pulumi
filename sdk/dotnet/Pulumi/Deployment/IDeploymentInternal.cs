@@ -16,7 +16,7 @@ namespace Pulumi
         ILogger Logger { get; }
         IRunner Runner { get; }
 
-        void ReadOrRegisterResource(Resource resource, ResourceArgs args, ResourceOptions opts);
+        void ReadOrRegisterResource(Resource resource, IResourceArgs args, ResourceOptions opts);
         void RegisterResourceOutputs(Resource resource, Output<IDictionary<string, object?>> outputs);
     }
 }

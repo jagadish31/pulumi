@@ -169,6 +169,17 @@ $"Tasks are not allowed inside ResourceArgs. Please wrap your Task in an Output:
                 return await SerializeAsync($"{ctx}.id", customResource.Id).ConfigureAwait(false);
             }
 
+            if (prop is DictionaryResource dictionaryResource)
+            {
+                if (_excessiveDebugOutput)
+                {
+                    Log.Debug($"Serialize property[{ctx}]: Encountered DictionaryResource");
+                }
+
+                this.DependentResources.Add(dictionaryResource);
+                return await SerializeAsync($"{ctx}.urn", dictionaryResource.Urn).ConfigureAwait(false);
+            }
+
             if (prop is ComponentResource componentResource)
             {
                 // Component resources often can contain cycles in them.  For example, an awsinfra

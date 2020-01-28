@@ -11,7 +11,7 @@ namespace Pulumi
     public partial class Deployment
     {
         private async Task<(string urn, string id, Struct data)> ReadResourceAsync(
-            Resource resource, string id, ResourceArgs args, ResourceOptions options)
+            Resource resource, string id, IResourceArgs args, ResourceOptions options)
         {
             var name = resource.GetResourceName();
             var type = resource.GetResourceType();

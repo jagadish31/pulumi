@@ -112,7 +112,7 @@ namespace Pulumi
         /// <param name="options">A bag of options that control this resource's behavior.</param>
         private protected Resource(
             string type, string name, bool custom,
-            ResourceArgs args, ResourceOptions options)
+            IResourceArgs args, ResourceOptions options)
         {
             if (string.IsNullOrEmpty(type))
                 throw new ArgumentException("'type' cannot be null or empty.", nameof(type));
@@ -139,24 +139,29 @@ namespace Pulumi
 
             foreach (var transformation in this._transformations)
             {
-                var tres = transformation(new ResourceTransformationArgs(this, args, options));
-                if (tres != null)
+                if (args is ResourceArgs resourceArgs)
                 {
-                    if (tres.Value.Options.Parent != options.Parent)
+                    var tres = transformation(new ResourceTransformationArgs(this, resourceArgs, options));
+                    if (tres != null)
                     {
-                        // This is currently not allowed because the parent tree is needed to
-                        // establish what transformation to apply in the first place, and to compute
-                        // inheritance of other resource options in the Resource constructor before
-                        // transformations are run (so modifying it here would only even partially
-                        // take affect).  It's theoretically possible this restriction could be
-                        // lifted in the future, but for now just disallow re-parenting resources in
-                        // transformations to be safe.
-                        throw new ArgumentException("Transformations cannot currently be used to change the 'parent' of a resource.");
-                    }
+                        if (tres.Value.Options.Parent != options.Parent)
+                        {
+                            // This is currently not allowed because the parent tree is needed to
+                            // establish what transformation to apply in the first place, and to compute
+                            // inheritance of other resource options in the Resource constructor before
+                            // transformations are run (so modifying it here would only even partially
+                            // take affect).  It's theoretically possible this restriction could be
+                            // lifted in the future, but for now just disallow re-parenting resources in
+                            // transformations to be safe.
+                            throw new ArgumentException("Transformations cannot currently be used to change the 'parent' of a resource.");
+                        }
 
-                    args = tres.Value.Args;
-                    options = tres.Value.Options;
+                        args = tres.Value.Args;
+                        options = tres.Value.Options;
+                    }
                 }
+                else
+                    throw new ResourceException($"Transformations are not supported for arguments of type {args.GetType()}", this);
             }
 
             // Make a shallow clone of options to ensure we don't modify the value passed in.
